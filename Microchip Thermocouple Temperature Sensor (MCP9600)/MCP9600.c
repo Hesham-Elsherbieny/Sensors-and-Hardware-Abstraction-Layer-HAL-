@@ -1,6 +1,6 @@
 /********************************************************************************************
  *                                                                                          *
- * File Name   : MCP9600.c                                                                      *
+ * File Name   : MCP9600.c                                                                  *
  *                                                                                          *
  * Author      : Hesham M. Elsherbieny                                                      *
  *                                                                                          *
@@ -229,10 +229,13 @@ MCP9600State_t MCP9600_readADCVal(f32* ADCVal)
 {
 	MCP9600State_t Status = MCP9600_STATE_NOK;
 	u8 DataBytes[MCP9600_ADC_RAW_DATA_BYTES_COUNT];
+	u32 RegVal =0;
 
 	Status = MCP9600_I2C_readRegister(MCP9600_ADC_RAW_DATA_ADDRESS, MCP9600_ADC_RAW_DATA_BYTES_COUNT, DataBytes);
 
-	*ADCVal = (f32) ( (f32)DataBytes[2] ) | ( (f32)DataBytes[1]<<8 ) | ( (f32)DataBytes[0]<<16 );
+	RegVal = ((u32) DataBytes[2]) | (((u32)DataBytes[1])<<8) | (((u32)DataBytes[0])<<16);
+
+	*ADCVal = (f32) RegVal;
 
 	return Status;
 }
