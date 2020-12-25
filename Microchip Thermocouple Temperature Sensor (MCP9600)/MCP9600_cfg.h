@@ -8,7 +8,7 @@
  *                                                                                          *
  * Date        : Dec 14, 2020                                                               *
  *                                                                                          *
- * Version     : 1.0.1                                                                      *
+ * Version     : 1.0.2                                                                     *
  *                                                                                          *
  * Description : Specifies the Microchip MPC9600 Thermocouple EMF to Temperature Converter  *
  *               configuration file that contains needed configuration Parameters.          *
@@ -21,13 +21,13 @@
 /*
  * Select the MCP9600 Thermocouple Type
  * Options:-
- * 			MCP9600_THERMOCOUPLE_TYPE_K
-			MCP9600_THERMOCOUPLE_TYPE_J
-			MCP9600_THERMOCOUPLE_TYPE_T
-			MCP9600_THERMOCOUPLE_TYPE_N
-			MCP9600_THERMOCOUPLE_TYPE_S
-			MCP9600_THERMOCOUPLE_TYPE_E
-			MCP9600_THERMOCOUPLE_TYPE_B
+ * 			    MCP9600_THERMOCOUPLE_TYPE_K
+            MCP9600_THERMOCOUPLE_TYPE_J
+            MCP9600_THERMOCOUPLE_TYPE_T
+            MCP9600_THERMOCOUPLE_TYPE_N
+            MCP9600_THERMOCOUPLE_TYPE_S
+            MCP9600_THERMOCOUPLE_TYPE_E
+            MCP9600_THERMOCOUPLE_TYPE_B
             MCP9600_THERMOCOUPLE_TYPE_R
  */
 #define  MCP9600_THERMOCOUPLE_TYPE			MCP9600_THERMOCOUPLE_TYPE_K

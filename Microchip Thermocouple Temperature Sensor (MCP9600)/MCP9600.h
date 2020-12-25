@@ -1,6 +1,6 @@
 /********************************************************************************************
  *                                                                                          *
- * File Name   : MCP9600.h                                                                      *
+ * File Name   : MCP9600.h                                                                  *
  *                                                                                          *
  * Author      : Hesham M. Elsherbieny                                                      *
  *                                                                                          *
@@ -8,10 +8,10 @@
  *                                                                                          *
  * Date        : Dec 14, 2020                                                               *
  *                                                                                          *
- * Version     : 1.0.1                                                                      *
+ * Version     : 1.0.2                                                                      *
  *                                                                                          *
  * Description : Specifies the Microchip MPC9600 Thermocouple EMF to Temperature Converter  *
- *               header file that contains needed interfaces and configuration masks.       *                      *
+ *               header file that contains needed interfaces and configuration masks.       *
  *                                                                                          *
  ********************************************************************************************/
 
@@ -19,6 +19,7 @@
 #define MCP9600_H_
 /************************************** TYPE DEFINITIONS ***************************************************************/
 
+/* Enum type definition of All MCP9600 Possible States */
 typedef enum
 {
 	MCP9600_STATE_NOK,
@@ -27,6 +28,7 @@ typedef enum
 	MCP9600_STATE_INVALID_PARAM
 }MCP9600State_t;
 
+/* Data Structure Object that holds all internal Sensor Status Associated with Flag Bits */
 typedef struct
 {
 	bool BurstConvComplete;
@@ -38,6 +40,7 @@ typedef struct
 	bool TempExceedAlert4;
 }MCP9600_SensorStatus_t;
 
+/* Data Structure Object that holds all Alert Configuration Register Parametres  */
 typedef struct
 {
 	bool AlertEnable;
@@ -48,6 +51,7 @@ typedef struct
 	u8   AlertTempType;
 }MCP9600_AlertConfig_t;
 
+/* Data Structure Object that holds all module informations like Device ID and Revision Number */
 typedef struct
 {
 	u8 DeviceID;
@@ -284,28 +288,251 @@ typedef struct
 #define ALERT4											4U
 
 /***************************************** PUBLIC APIS PROTOTYPES ***********************************************/
+
+
+/*****************************************************************************************************
+ * Service name      : MCP9600_init                                                                  *
+ * Parameters (in)   : None                                                                          *
+ * Parameters (inout): None                                                                          *
+ * Parameters (out)  : None                                                                          *
+ * Return value      : MCP9600State_t                                                                *
+ *                                    MCP9600_STATE_OK   : Module Initialized Successfully           *
+ *                                    MCP9600_STATE_NOK  : Encounterd a problem during Initialization*
+ *                                                                                                   *
+ * Description       : Function Used to Initialize MCP9600 Module with all Pre-Compile Configurations*
+ *                     Specified In MCP9600_cfg.h file after Selecting Wanted Configurations         *
+ *****************************************************************************************************/
 MCP9600State_t MCP9600_init(void);
 
+/******************************************************************************************************
+ * Service name      : MCP9600_readHotJuncTemp                                                        *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : HotTemp        ->  Pointer to float value(contains temperature in degrees)     *
+ * Return value      : MCP9600State_t                                                                 *
+ *                                    MCP9600_STATE_OK   : Temperature Read Successfully              *
+ *                                    MCP9600_STATE_NOK  : Encounterd a problem while reading Register*
+ *                                                                                                    *
+ * Description       : Function Used to read hot junction temperature by reading the corresponding    *
+ *                     internal register and converting it to temperature in degrees celsius          *
+ *                                                                                                    *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_readHotJuncTemp(f32* HotTemp);
+/******************************************************************************************************
+ * Service name      : MCP9600_readColdJuncTemp                                                       *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : ColdTemp        ->  Pointer to float value(contains temperature in degrees)    *
+ * Return value      : MCP9600State_t                                                                 *
+ *                                    MCP9600_STATE_OK   : Temperature Read Successfully              *
+ *                                    MCP9600_STATE_NOK  : Encounterd a problem while reading Register*
+ *                                                                                                    *
+ * Description       : Function Used to read cold/ambient junction temperature by reading the         *
+ *                     corresponding internal register then converting it to temperature in           *                
+ *                     degrees celsius                                                                *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_readColdJuncTemp(f32* ColdTemp);
+/******************************************************************************************************
+ * Service name      : MCP9600_readDeltaTemp                                                          *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : DeltaTemp        ->  Pointer to float value(contains temperature in degrees)   *
+ * Return value      : MCP9600State_t                                                                 *
+ *                                    MCP9600_STATE_OK   : Temperature Read Successfully              *
+ *                                    MCP9600_STATE_NOK  : Encounterd a problem while reading Register*
+ *                                                                                                    *
+ * Description       : Function Used to read Delta temperature by reading the corresponding internal  *
+ *                     register then converting it to temperature in degrees celsius                  *                                                            *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_readDeltaTemp(f32* DeltaTemp);
+/******************************************************************************************************
+ * Service name      : MCP9600_readADCVal                                                             *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : ADCVal        ->  Pointer to float value(contains ADC digital reading)         *
+ * Return value      : MCP9600State_t                                                                 *
+ *                                    MCP9600_STATE_OK   : ADC Value Read Successfully                *
+ *                                    MCP9600_STATE_NOK  : Encounterd a problem while reading Register*
+ * Description       : Function Used to read ADC Raw Data by reading the corresponding internal       *
+ *                     Register                                                                       *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_readADCVal(f32* ADCVal);
+/******************************************************************************************************
+ * Service name      : MCP9600_getSensorStatus                                                        *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : Status        ->  Pointer to MCP9600_SensorStatus_t Type                       *
+ *                                      (contains status of sensors flag bits)                        *
+ * Return value      : MCP9600State_t                                                                 *
+ *                                    MCP9600_STATE_OK   : Sensor Status Read Successfully            *
+ *                                    MCP9600_STATE_NOK  : Encounterd a problem while reading Register*
+ * Description       : Function Used to read status of internal flag bits described                   *
+ *                      in  STATUS REGISTER                                                           *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_getSensorStatus(MCP9600_SensorStatus_t* Status);
+/******************************************************************************************************
+ * Service name      : MCP9600_getDeviceInfo                                                          *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : DeviceInfo        ->  Pointer to MCP9600_DeviceInfo_t Type                     *
+ *                                          (contains Device Information)                             *
+ * Return value      : MCP9600State_t                                                                 *
+ *                                    MCP9600_STATE_OK   : Device Information Read Successfully       *
+ *                                    MCP9600_STATE_NOK  : Encounterd a problem while reading Register*
+ * Description       : Function Used to read Device Information described in  DEVICE ID AND           *
+ *                     REVISION ID REGISTER such as Device ID, Major and Minor Revision Numbers       *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_getDeviceInfo(MCP9600_DeviceInfo_t* DeviceInfo);
 
+/******************************************************************************************************
+ * Service name      : MCP9600_setSensorConfig                                                        *
+ * Parameters (in)   : ThermoType, FilterCoeff      ->  unsigned char Type                            *
+ *                                                 (contains Thermocouple Type and Filter Coefficient)*
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : None                                                                           *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Sensor Configuration written Successfully  *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while writing Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Write Sensor Configurations to  SENSOR CONFIGURATION REGISTER *
+ *                     which is Thermocouple Type and Filter Coefficient                              *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_setSensorConfig(u8 ThermoType, u8 FilterCoeff);
+/******************************************************************************************************
+ * Service name      : MCP9600_getSensorConfig                                                        *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : ThermoType, FilterCoeff      ->  Pointer to unsigned char Type                 *
+ *                                                 (contains Thermocouple Type and Filter Coefficient *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Sensor Configuration Read Successfully     *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while reading Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Read Sensor Configurations from SENSOR CONFIGURATION REGISTER *
+ *                     which is Thermocouple Type and Filter Coefficient                              *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_getSensorConfig(u8* ThermoType, u8* FilterCoeff);
 
+/******************************************************************************************************
+ * Service name      : MCP9600_setDeviceConfig                                                        *
+ * Parameters (in)   : ColdJuncResol, ADCResol, BurstSampleCount, Mode  ->  unsigned char Type        *
+ *                                                                (contains all Device Configurations)*
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : None                                                                           *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Device Configuration written Successfully  *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while writing Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Write Device Configurations to  DEVICE CONFIGURATION REGISTER *
+ *                     which is Device Mode, number of Samples in case of Burst Mode, Cold Junction   *
+ *                     Temperature Resolution and ADC Resolution                                      *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_setDeviceConfig(u8 ColdJuncResol, u8 ADCResol, u8 BurstSampleCount, u8 Mode);
+/******************************************************************************************************
+ * Service name      : MCP9600_getDeviceConfig                                                        *
+ * Parameters (in)   : None                                                                           *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : ColdJuncResol, ADCResol, BurstSampleCount, Mode ->Pointer to unsigned char Type*
+ *                                                                (contains all Device Configurations)*
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Device Configuration read Successfully     *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while reading Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Read Device Configurations to  DEVICE CONFIGURATION REGISTER  *
+ *                     which is Device Mode, number of Samples in case of Burst Mode, Cold Junction   *
+ *                     Temperature Resolution and ADC Resolution                                      *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_getDeviceConfig(u8* ColdJuncResol, u8* ADCResol, u8* BurstSampleCount, u8* Mode);
 
+/******************************************************************************************************
+ * Service name      : MCP9600_setDeviceConfig                                                        *
+ * Parameters (in)   : AlertID      -> unsigned char Type         (contains Alert ID )                *
+ *                     AlertConfig  -> MCP9600_AlertConfig_t Type (contains Alert Configurations)     *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : None                                                                           *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Alert Configuration written Successfully   *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while writing Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Write Alert Configurations to  ALERT CONFIGURATION REGISTERS  *
+ *                     which is Alert Output Enable, Alert Mode, Active-High/Low Alert State,         *
+ *                     Rise/Fall Alert Temperature Direction, Monitor TH or TC Temperature Detect     *
+ *                     and Interrupt Clear for each of the 4 Alert Configuration Registers            *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_setAlertConfig(u8 AlertID, MCP9600_AlertConfig_t AlertConfig);
+/******************************************************************************************************
+ * Service name      : MCP9600_getAlertConfig                                                         *
+ * Parameters (in)   : AlertID      -> unsigned char Type         (contains Alert ID )                *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : AlertConfig  -> Pointer to MCP9600_AlertConfig_t Type                          *
+ *                                                                (contains Alert Configurations)     * 
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Alert Configuration written Successfully   *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while writing Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Write Alert Configurations to  ALERT CONFIGURATION REGISTERS  *
+ *                     which is Alert Output Enable, Alert Mode, Active-High/Low Alert State,         *
+ *                     Rise/Fall Alert Temperature Direction, Monitor TH or TC Temperature Detect     *
+ *                     and Interrupt Clear for each of the 4 Alert Configuration Register             *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_getAlertConfig(u8 AlertID, MCP9600_AlertConfig_t* AlertConfig);
 
+/******************************************************************************************************
+ * Service name      : MCP9600_setAlertLimit                                                          *
+ * Parameters (in)   : AlertID         -> unsigned char Type      (contains Alert ID )                *
+ *                     AlertLimitTemp  -> Float Type              (contains Alert Limit Temperature)  *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : None                                                                           *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Alert Limit Temp written Successfully      *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while writing Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Set Alert Limit Temperature for each of the 4 Alert Limtit    *
+ *                     Registers                                                                      *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_setAlertLimit(u8 AlertID, f32 AlertLimitTemp);
+/******************************************************************************************************
+ * Service name      : MCP9600_getAlertLimit                                                          *
+ * Parameters (in)   : AlertID         -> unsigned char Type      (contains Alert ID )                *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : AlertLimitTemp  -> Pointer to Float Type   (contains Alert Limit Temperature)  *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Alert Limit Temp Read Successfully         *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while Reading Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Read Alert Limit Temperature written to each of the 4 Alert   * 
+ *                     Limtit Registers                                                               *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_getAlertLimit(u8 AlertID, f32* AlertLimitTemp);
 
+/******************************************************************************************************
+ * Service name      : MCP9600_setHystVal                                                             *
+ * Parameters (in)   : AlertID         -> unsigned char Type   (contains Alert ID )                   *
+ *                     HystVal         -> unsigned char Type   (contains Alert Limit Hysteresis Value)*
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : None                                                                           *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Alert Limit Hysteresis written Successfully*
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while writing Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Set Alert Limit Hysteresis Value for each of the 4 Alert      *
+ *                     Hysteresis Registers                                                           *
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_setHystVal(u8 AlertID, u8 HystVal);
+/******************************************************************************************************
+ * Service name      : MCP9600_getHystVal                                                             *
+ * Parameters (in)   : AlertID         -> unsigned char Type   (contains Alert ID )                   *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : AlertLimitTemp  -> Pointer to unsigned char Type                               *
+ *                                                             (contains Alert Limit Hysteresis Value)*
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Alert Limit Hysteresis Read Successfully   *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while Reading Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Read Alert Limit Hysteresis Value written to each of the      *
+ *                     4 Alert Hysteresis Registers                                                   * 
+ ******************************************************************************************************/
 MCP9600State_t MCP9600_getHystVal(u8 AlertID, u8* HystVal);
+
 
 #endif /* MCP9600_H_ */

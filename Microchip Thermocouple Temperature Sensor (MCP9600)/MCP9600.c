@@ -8,7 +8,7 @@
  *                                                                                          *
  * Date        : Dec 14, 2020                                                               *
  *                                                                                          *
- * Version     : 1.0.1                                                                      *
+ * Version     : 1.0.2                                                                      *
  *                                                                                          *
  * Description : Specifies the Microchip MPC9600 Thermocouple EMF to Temperature Converter  *
  *               source file that contain basic functional APIs.                            *
@@ -28,6 +28,22 @@ static MCP9600State_t MCP9600_I2C_writeRegister(u8 RegisterAddress, u8 RegisterB
 static MCP9600State_t MCP9600_I2C_readRegister(u8 RegisterAddress, u8 RegisterBytesCount, u8* RegisterValue );
 
 /********************************* STATIC FUNCTIONS IMPLEMENTATION ************************************/
+
+/******************************************************************************************************
+ * Service name      : MCP9600_I2C_writeRegister              ->          Static Function (Private)   *
+ * Parameters (in)   : RegisterAddress   ->unsignedChar Type(contains Internal Register Address )     *
+ *                     RegisterBytesCount->unsignedChar Type(contains Number of Bytes Occupied by Reg)*
+ *                     RegisterValue     ->unsignedChar Type(contains Value to be written in Reg)     *
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : None                                                                           *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Register Value is written Successfully     *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while writing Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Write a Specific Value to a Certain Register by writing its   *
+ *                     Address to Address Pointer and then Sends data needs to be written in Register *
+ *                     Knowing the Number of Bytes needs to be written                                *
+ ******************************************************************************************************/
 static MCP9600State_t MCP9600_I2C_writeRegister(u8 RegisterAddress, u8 RegisterBytesCount, u16 RegisterValue)
 {
 	MCP9600State_t MCP9600_Status = MCP9600_STATE_NOK;
@@ -60,6 +76,20 @@ static MCP9600State_t MCP9600_I2C_writeRegister(u8 RegisterAddress, u8 RegisterB
 	return MCP9600_Status;
 }
 
+/******************************************************************************************************
+ * Service name      : MCP9600_I2C_readRegister              ->          Static Function (Private)    *
+ * Parameters (in)   : RegisterAddress   ->unsignedChar Type(contains Internal Register Address )     *
+ *                     RegisterBytesCount->unsignedChar Type(contains Number of Bytes Occupied by Reg)*
+ * Parameters (inout): None                                                                           *
+ * Parameters (out)  : RegisterValue     ->pointer to unsignedChar Type (contains Register Value)     *
+ * Return value      : MCP9600State_t                                                                 *
+ *                            MCP9600_STATE_OK           : Register Value is Read Successfully        *
+ *                            MCP9600_STATE_NOK          : Encounterd a problem while Reading Register*
+ *                            MCP9600_STATE_INVALID_PARAM: Invalid Input Parameter                    *
+ * Description       : Function Used to Read a Certain Register Data by writing its Address to        *
+ *                     Address Pointer and then Reads the received data which is written in Register  *
+ *                     Knowing the Number of Bytes needs to be Read                                   *
+ ******************************************************************************************************/
 static MCP9600State_t MCP9600_I2C_readRegister(u8 RegisterAddress, u8 RegisterBytesCount, u8* RegisterValue )
 {
 	MCP9600State_t MCP9600_Status = MCP9600_STATE_NOK;
@@ -584,7 +614,7 @@ MCP9600State_t MCP9600_getAlertLimit(u8 AlertID, f32* AlertLimitTemp)
 	State = MCP9600_I2C_readRegister(RegAddress, RegByteCount, &RegVal);
 
 	/* Map Register Value In order to return the original Temperature Without the Cleared First 2 Bits */
-	AlertLimitTemp = RegVal / 16;
+	*AlertLimitTemp = (f32) RegVal / 16;
 
 	return State;
 }
