@@ -1,0 +1,3 @@
+#define	KEYPAD_ROWS_MAX	4
+
+#define	KEYPAD_COLOUMS_MAX	4
